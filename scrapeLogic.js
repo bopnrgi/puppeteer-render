@@ -17,28 +17,20 @@ const scrapeLogic = async (res) => {
   try {
     const page = await browser.newPage();
 
-    await page.goto("https://developer.chrome.com/");
+    await page.goto("https://meteo.kisoui.fr");
 
-    // Set screen size
-    await page.setViewport({ width: 1080, height: 1024 });
+    // Change la résoliution de la page
+    await page.setViewport({ width: 1920, height: 1080 });
 
-    // Type into search box
-    await page.type(".search-box__input", "automate beyond recorder");
-
-    // Wait and click on first result
-    const searchResultSelector = ".search-box__link";
-    await page.waitForSelector(searchResultSelector);
-    await page.click(searchResultSelector);
-
-    // Locate the full title with a unique string
-    const textSelector = await page.waitForSelector(
-      "text/Customize and automate"
-    );
-    const fullTitle = await textSelector.evaluate((el) => el.textContent);
-
-    // Print the full title
-    const logStatement = `The title of this blog post is ${fullTitle}`;
-    console.log(logStatement);
+    // Récupère tout le texte de la page
+    const logStatement = await page.evaluate(() => {
+      const elements = document.querySelectorAll("body");
+      let text = "";
+      elements.forEach((element) => {
+        text += element.innerText;
+      });
+      return text;
+    });
     res.send(logStatement);
   } catch (e) {
     console.error(e);
